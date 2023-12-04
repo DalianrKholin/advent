@@ -1,0 +1,113 @@
+import matplotlib.pyplot as plt
+
+
+
+
+
+
+class MyNode:
+    def __init__(self, xx, yy, position):
+        self.x = xx
+        self.y = yy
+        self.position = position
+
+    def print(self):
+        print(f"{self.x}, {self.y}, {self.position}")
+
+    def hk(self,nodeArray):
+        return self.x - nodeArray[self.position - 1].x
+
+
+n0 = MyNode(-7, -16185, 0)
+n1 = MyNode(-4, -10116, 1)
+n2 = MyNode(-2, -6070, 2)
+n3 = MyNode(0, -2024, 3)
+n4 = MyNode(1, -1, 4)
+n5 = MyNode(5, 8091, 5)
+n6 = MyNode(10, 18206, 6)
+"""n0 = MyNode(-2, -2, 0)
+n1 = MyNode(-1, -1, 1)
+n2 = MyNode(1, 3, 2)
+n3 = MyNode(2, 6, 3)"""
+nodeArray = [n0, n1, n2, n3,n4,n5,n6]
+#nodeArray = [n0, n1, n2, n3]
+m = [0] * len(nodeArray)
+
+def calc(nodeArray):
+    q = [0]
+    u = [0]
+    p = [0]
+    for x in range(1, len(nodeArray)-1):
+        p.append((lam(x,nodeArray) * q[x - 1]) + 2)
+        q.append((lam(x,nodeArray) - 1) / p[x])
+        u.append((calcInt(x, nodeArray) - lam(x,nodeArray) * u[x - 1]) / p[x])
+    i = 1
+    m[len(nodeArray)-2] = u[len(nodeArray)-2]
+    for x in range(0, len(nodeArray)-2):
+        m[i] = u[i] + q[i] * m[i + 1]
+        i -= 1
+
+
+def lam(k,nodeArray):
+    nk = nodeArray[k]
+    nk1 = nodeArray[k + 1]
+    return nk.hk(nodeArray) / (nk1.hk(nodeArray) + nk.hk(nodeArray))
+
+def calcInt2(n1, n2):
+    return (n2.y - n1.y) / (n2.x - n1.x)
+def calcInt3(n1, n2, n3):
+    return (calcInt2(n2, n3) - calcInt2(n1, n2)) / (n3.x - n1.x)
+def calcInt(k,nodeArray):
+    return 6 * calcInt3(nodeArray[k - 1], nodeArray[k], nodeArray[k + 1])
+
+
+def make(nodeArray):
+    for x in range(1,len(nodeArray)):
+        w1=(1/6)*m[x-1]
+        w2=(1/6)*m[x]
+        w3=nodeArray[x-1].y - (1/6)*m[x-1]*(nodeArray[x].hk(nodeArray)**2)
+        w4=nodeArray[x].y-(1/6)*m[x]*(nodeArray[x].hk(nodeArray)**2)
+        print(f"sk(x) = {nodeArray[x].hk(nodeArray)**-1}({w1}({nodeArray[x].x}-x)^3 + {w2}(x-{nodeArray[x-1].x})^3+{w3}({nodeArray[x].x}-x) + {w4}(x -{nodeArray[x-1].x})")
+
+
+
+
+
+n1.print()
+
+calc(nodeArray)
+
+#print(m)
+make(nodeArray)
+xd = lambda x: 2023*x-2024
+
+
+xx = [5.5, 8.5, 10.5, 13, 17, 20.5, 24.5, 28, 32.5, 37.5, 40.5, 42.5, 45, 47,
+     49.5, 50.5, 51, 51.5, 52.5, 53, 52.8, 52, 51.5, 53, 54, 55, 56, 55.5, 54.5, 54, 55, 57, 58.5,
+     59, 61.5, 62.5, 63.5, 63, 61.5, 59, 55, 53.5, 52.5, 50.5, 49.5, 50, 51, 50.5, 49, 47.5, 46,
+     45.5, 45.5, 45.5, 46, 47.5, 47.5, 46, 43, 41, 41.5, 41.5, 41, 39.5, 37.5, 34.5, 31.5, 28, 24,
+     21, 18.5, 17.5, 16.5, 15, 13, 10, 8, 6, 6, 6, 5.5, 3.5, 1, 0, 0, 0.5, 1.5, 3.5, 5, 5, 4.5, 4.5, 5.5,
+     6.5, 6.5, 5.5]
+yy = [41, 40.5, 40, 40.5, 41.5, 41.5, 42, 42.5, 43.5, 45, 47, 49.5, 53, 57, 59,
+     59.5, 61.5, 63, 64, 64.5, 63, 61.5, 60.5, 61, 62, 63, 62.5, 61.5, 60.5, 60, 59.5, 59, 58.5,
+     57.5, 55.5, 54, 53, 51.5, 50, 50, 50.5, 51, 50.5, 47.5, 44, 40.5, 36, 30.5, 28, 25.5, 21.5,
+     18, 14.5, 10.5, 7.50, 4, 2.50, 1.50, 2, 3.50, 7, 12.5, 17.5, 22.5, 25, 25, 25, 25.5, 26.5,
+     27.5, 27.5, 26.5, 23.5, 21, 19, 17, 14.5, 11.5, 8, 4, 1, 0, 0.5, 3, 6.50, 10, 13, 16.5, 20.5,
+     25.5, 29, 33, 35, 36.5, 39, 41]
+px= []
+py= []
+print(len(xx))
+lm = lambda x: x/1000
+for x in range(len(xx)):
+    arg = x/95
+    y = xx[x]
+    nodeArray.append(MyNode(lm(xx[x]),lm(yy[x]),x))
+    px.append(lm(xx[x]))
+    py.append(lm(yy[x]))
+
+
+"""plt.plot(px, py)
+plt.xlabel('Oś X')
+plt.ylabel('Oś Y')
+plt.title('Wykres liniowy')
+plt.show()"""
